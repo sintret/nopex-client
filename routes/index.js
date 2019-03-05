@@ -5,7 +5,6 @@ const moment = require('moment')
 var child = require('child_process');
 var events = require('events');
 var spawn = child.spawn;
-const publicIp = require('public-ip');
 
 
 var options = {
@@ -33,17 +32,50 @@ var now = function () {
 
 var dir = '/home/nopex-client/public/';
 var filephoto = dir + 'photo/' + now() + '.jpg';
-var filevideo = dir + 'video/' + now() + '.h264'
+var filevideo = dir + 'video/' + now() + '.h264';
+
+
+var getIp = function (cb) {
+
+    const http = require('http');
+    var options = {
+        host: 'ipv4bot.whatismyipaddress.com',
+        port: 80,
+        path: '/'
+    };
+
+    http.get(options, function(res) {
+        console.log("status: " + res.statusCode);
+
+        res.on("data", function(chunk) {
+            console.log("BODY: " + chunk);
+            cb(chunk)
+        });
+    }).on('error', function(e) {
+        console.log("error: " + e.message);
+    });
+}
+
+var ip = function () {
+
+    return new Promise(function (resolve,reject) {
+        externalip(function (err, ip) {
+            "use strict";
+
+            resolve(ip)
+        });
+    })
+}
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
 
-    var ip = await publicIp.v4();
+    var ip = await ip();
+
 
     // const myCamera = new PiCamera(options.myCamera);
     //var snapit  = await myCamera.snap();
     // const myVideo = new PiCamera(options.myVideo);
-
 
     res.render('index', {title: ip});
 });
