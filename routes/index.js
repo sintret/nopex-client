@@ -70,14 +70,16 @@ var ip = function () {
 /* GET home page. */
 router.get('/', async function (req, res, next) {
 
-    var ip = await ip();
+    var ip = getIp(function (ip) {
+        res.render('index', {title: ip});
+
+    })
 
 
     // const myCamera = new PiCamera(options.myCamera);
     //var snapit  = await myCamera.snap();
     // const myVideo = new PiCamera(options.myVideo);
 
-    res.render('index', {title: ip});
 });
 
 router.post('/photo', async function (req, res) {
